@@ -138,6 +138,7 @@ func (e *APIEngine) Stop() {
 //Handles incoming work requests for hashing and dispatches async persistence tasks
 func (e *APIEngine) worker(c chan *HashingRequest) {
 	e.wg.Add(1)
+	defer e.wg.Done()
 	var he jumphasher.HashingEngine
 	switch e.hashType { //we can extend this with more hash functions
 	case jumphasher.HashTypeSHA512:
@@ -150,12 +151,12 @@ func (e *APIEngine) worker(c chan *HashingRequest) {
 		h, err := he.Hash(r.Password)
 		if err != nil {
 			r.ReturnChan <- err
+			return
 		}
 		//dispatch async persistence job
 		go e.persist(&r.ID, h, e.delay)
 		r.ReturnChan <- nil
 	}
-	e.wg.Done()
 }
 
 //Persists hashing result asynchronously
