@@ -37,6 +37,7 @@ The server will listen on port 80 for HTTP and 443 for HTTPS unless you've mappe
 | `--sslcert`     | Location of X509 SSL certificate                                         | Valid location of certificate. <br> If one is not available at the given location, a self-signed one will be generated                  | `server.crt`                      |
 | `--sslkey`      | Location of SSL private key in PEM format                                | Valid location of private key. <br> If one is not available at the given location, an EC private key will be generated using NIST P-256 | `server.pem`                      |
 | `--delay`       | Number of seconds to delay hashing requests before they become available | Positive integers                                                                                                                       | 5                                 |
+| `--concurrency` | Target concurrency to use for internal workers and data structures       | 1+                                                                                                                                      | Number of logical cores on system |
 
 ## Endpoints
 | Method | Endpoint    | URI Parameters                   | Client Payload              | Server Payload                                                                                                                       |
@@ -45,7 +46,6 @@ The server will listen on port 80 for HTTP and 443 for HTTPS unless you've mappe
 | `GET`  | `/hash`     | `id` the 32 character job ID | N/A                         | If found, a base 64 encoded hash for the job ID. <br> Eg; `7+jtE9tp16UQHMShH1l0uMlq1JF...`                                                |
 | `GET`  | `/stats`    | N/A                          | N/A                         | A JSON structure containing total requests and average request handling time in milliseconds.<br> Eg; `{"total": 14000, "average": "1"}` |
 | `GET`  | `/shutdown` | N/A                          | N/A                         | Confirmation that shutdown has commenced                                                                                             |
- `--concurrency` | Target concurrency to use for internal workers and data structures       | 1+                                                                                                                                      | Number of logical cores on system |
 
 ## Tutorial
 Here, we'll spin up the server with a 60 second job delay, issue some hashing requests, check some stats, check the resulting hashes, and shut the server down.
