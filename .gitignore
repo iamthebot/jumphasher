@@ -3,6 +3,12 @@
 *.a
 *.so
 
+# Certificates
+*.crt
+
+# Keys
+*.pem
+
 # Folders
 _obj
 _test
@@ -22,3 +28,4 @@ _testmain.go
 *.exe
 *.test
 *.prof
+.idea/
