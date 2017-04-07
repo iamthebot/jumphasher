@@ -110,7 +110,6 @@ Try it again while there's a hashing job pending. You'll get a 400 status code.
 ```
 curl -w "\n" -k https://localhost:20000/shutdown
 server already shutting down
-commencing shutdown
 ```
 
 The server should now exit gracefully after roughly `delay` seconds since the last hash request.
