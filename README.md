@@ -16,6 +16,11 @@ go get -v github.com/jumphasher/api
 go build -o $GOPATH/bin/jumphasher github.com/iamthebot/jumphasher/api
 ```
 
+To run unit tests (with the race detector)
+```bash
+go test -v -race ./...
+```
+
 ### Docker
 Assuming your certificate and key are in `SSL_CERT_FOLDER` and named `server.crt` and `server.pem`...
 ```bash
@@ -25,6 +30,7 @@ docker run -v <SSL cert folder>:/mnt/ssl:Z -p <hosthttpport>:80/tcp -p <hosthttp
 If you don't already have a certificate and key ready, map a host folder where you'd like them to be generated and map it to `/mnt/ssl` on the container. Make sure to append `:Z` to the mapping directive if using a distribution that has SELinux enabled so the contexts are managed properly.
 
 The server will listen on port 80 for HTTP and 443 for HTTPS unless you've mapped the ports.
+
 
 
 
