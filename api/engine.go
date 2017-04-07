@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-    "os"
+	"os"
 	"sync"
 	"time"
 )
@@ -48,14 +48,14 @@ func NewAPIEngine(c int, hf int, sslcfg *SSLConfig, port int, delay int) (*APIEn
 	e.hashType = hf
 	e.port = port
 	e.delay = delay
-    e.store = jumphasher.NewMemHashStore(c)
+	e.store = jumphasher.NewMemHashStore(c)
 	return &e, nil
 }
 
 func (e *APIEngine) Start() {
 	for i := 0; i < len(e.inChans); i++ {
 		e.inChans[i] = make(chan *HashingRequest)
-        go e.worker(e.inChans[i])
+		go e.worker(e.inChans[i])
 	}
 
 	//set up handlers for default muxer
@@ -85,19 +85,19 @@ func (e *APIEngine) Start() {
 	})
 	if e.sslcfg != nil {
 		e.alive.TestAndSet()
-        if !e.sslcfg.Exclusive { //dispatch TLS listener asynchronously and block on normal HTTP server
+		if !e.sslcfg.Exclusive { //dispatch TLS listener asynchronously and block on normal HTTP server
 			go func() {
-                log.Printf("Server now accepting https connections at port %d", e.sslcfg.Port)
+				log.Printf("Server now accepting https connections at port %d", e.sslcfg.Port)
 				err := http.ListenAndServeTLS(fmt.Sprintf(":%d", e.sslcfg.Port), e.sslcfg.CertFile, e.sslcfg.KeyFile, nil)
 				if err != nil {
 					log.Fatal(err)
 				}
 			}()
-            log.Printf("Server now accepting http connections at port %d", e.port)
-            err := http.ListenAndServe(fmt.Sprintf(":%d", e.port), nil)
-            if err != nil {
-                log.Fatal(err)
-            }
+			log.Printf("Server now accepting http connections at port %d", e.port)
+			err := http.ListenAndServe(fmt.Sprintf(":%d", e.port), nil)
+			if err != nil {
+				log.Fatal(err)
+			}
 		} else { //block on TLS listener
 			log.Printf("Server now accepting SSL connections at port %d", e.port)
 			err := http.ListenAndServeTLS(fmt.Sprintf(":%d", e.sslcfg.Port), e.sslcfg.CertFile, e.sslcfg.KeyFile, nil)
@@ -105,7 +105,7 @@ func (e *APIEngine) Start() {
 				log.Fatal(err)
 			}
 		}
-    } else { //block on HTTP server
+	} else { //block on HTTP server
 		e.alive.TestAndSet()
 		log.Printf("Server now accepting http connections at port %d", e.port)
 		err := http.ListenAndServe(fmt.Sprintf(":%d", e.port), nil)
@@ -130,9 +130,9 @@ func (e *APIEngine) Stop() {
 		close(c)
 	}
 	//wait for workers to finish
-    log.Println("Waiting for workers to finish...")
+	log.Println("Waiting for workers to finish...")
 	e.wg.Wait()
-    os.Exit(0)
+	os.Exit(0)
 }
 
 //Handles incoming work requests for hashing and dispatches async persistence tasks
@@ -162,7 +162,7 @@ func (e *APIEngine) worker(c chan *HashingRequest) {
 //
 //delay controls the number of seconds before the ID is persisted and the result is available via GET /hash
 func (e *APIEngine) persist(id *jumphasher.UUID, hash []byte, delay int) {
-    e.wg.Add(1)
+	e.wg.Add(1)
 	if delay != 0 {
 		time.Sleep(time.Duration(int64(delay) * int64(time.Second)))
 	}
@@ -170,7 +170,7 @@ func (e *APIEngine) persist(id *jumphasher.UUID, hash []byte, delay int) {
 	if err != nil {
 		log.Printf("Error: job %s could not be stored", id.MarshalText())
 	}
-    e.wg.Done()
+	e.wg.Done()
 }
 
 //route handler for POST /hash
@@ -211,7 +211,7 @@ func (e *APIEngine) onHashPost(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-    close(rc)
+	close(rc)
 
 	strid := id.MarshalText()
 	w.WriteHeader(http.StatusOK)
@@ -249,7 +249,7 @@ func (e *APIEngine) onHashGet(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
 	base64hash := base64.StdEncoding.EncodeToString(hash)
 	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(base64hash)))
-    io.WriteString(w, base64hash)
+	io.WriteString(w, base64hash)
 }
 
 //route handler for GET /stats
@@ -271,7 +271,7 @@ func (e *APIEngine) onStatsGet(w http.ResponseWriter, req *http.Request) {
 func (e *APIEngine) onShutdownGet(w http.ResponseWriter, req *http.Request) {
 	if !e.alive.Test() {
 		http.Error(w, "server already shutting down", http.StatusBadRequest)
-        return
+		return
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
